@@ -1,68 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-    <title>LoR NetDeck Killer</title>
-    <head>
-        <link rel="stylesheet" href="../static/main.css">
-    </head>
-    <body>
-        <div class="container">
-            <h1>LoR NetDeck Killer</h1>
-            <h2>Please select enemy's regions and champions, then press <b>Find Decks</b></h2>
-            <div class="deck_finder">
-                <div class="regions">
-                    <p>Select at least 1 Region</p>
-                    <form action="{{url_for('region_select')}}" method="POST"> 
-                    <div class="region_1">
-                        <p>Region 1</p>
-                        <select name="region_1" id="region_1" autocomplete="on" onchange='this.form.submit()'> 
-                            {% for region in regions %}
-                            <option value="{{region}}" SELECTED> {{region}} </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="region_2">
-                        <p>Region 2</p>
-                        <select name="region_2" id="region_2" autocomplete="on">
-                            <option value=""> --None-- </option>
-                            <option value="Ionia"> Ionia </option>
-                        </select>
-                    </div>
-                    <noscript><input type="submit" value="Submit"></noscript>
-                    </form>
+<title>LoR NetDeck Killer</title>
+
+<head>
+    <link rel="stylesheet" href="../static/main.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>LoR NetDeck Killer</h1>
+        <h2>Step 1: Select enemy regions</h2>
+        <p>Select at least 1 Region and click find:</p>
+        <form action="{{url_for('deck_select')}}" method="POST">
+        <div class="regions">
+                <div class="region_1">
+                    <p>Region 1</p>
+                    <select name="region_1" id="region_1" autocomplete="on">
+                        {% for region in regions %}
+                        <option value="{{region}}"> {{region}} </option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="champions">
-                    <p>Select Enemy Champions:</p>
-                    <div class="champion_1">
-                        <p>Champion 1</p>
-                        <select name="champion_1" id="champion_1" autocomplete="on">
-                            <option value=""> --None-- </option>
-                            <option value="Ionia"> Anivia </option>
-                        </select>
-                    </div>
-                    <div class="champion_2">
-                        <p>Champion 2</p>
-                        <select name="champion_2" id="champion_2" autocomplete="on">
-                            <option value=""> --None-- </option>
-                            <option value="Ionia"> Anivia </option>
-                        </select>
-                    </div>
-                    <div class="champion_3">
-                        <p>Champion 3:</p>
-                        <select name="champion_3" id="champion_3" autocomplete="on">
-                            <option value=""> --None-- </option>
-                            <option value="Ionia"> Anivia </option>
-                        </select>
-                    </div>
-                    <div class="champion_4">
-                        <p>Champion 4:</p>
-                        <select name="champion_3" id="champion_3" autocomplete="on">
-                            <option value=""> --None-- </option>
-                            <option value="Ionia"> Anivia </option>
-                        </select>
-                    </div>
+                <div class="region_2">
+                    <p>Region 2</p>
+                    <select name="region_2" id="region_2" autocomplete="on">
+                        {% for region in regions %}
+                        <option value="{{region}}"> {{region}} </option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </div>
-            <button class="btn"> Find </button>
         </div>
-    </body>
+        <button class="find_btn"> Find </button>
+        </form>
+    </div>
+</body>
+
 </html>

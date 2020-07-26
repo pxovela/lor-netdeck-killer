@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>LoR NetDeck Killer</title>
+
+<head>
+    <link rel="stylesheet" href="../static/deck_select.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>LoR NetDeck Killer</h1>
+        <h2>Step 2: Select enemy's deck</h2>
+        <p>(Optional: Select enemy's champions to filter decks and press filter</p>
+        <form action="{{url_for('deck_select')}}" method="POST">
+            <div class="champions">
+                <div class="champion_1">
+                    <p>Champion 1</p>
+                    <select name="champion_1" id="champion_1" autocomplete="on">
+                        {% for champ in champions %}
+                        <option value="{{champ}}"> {{champ}} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="champion_2">
+                    <p>Champion 2</p>
+                    <select name="champion_2" id="champion_2" autocomplete="on">
+                        {% for champ in champions %}
+                        <option value="{{champ}}"> {{champ}} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="champion_3">
+                    <p>Champion 3</p>
+                    <select name="champion_3" id="champion_3" autocomplete="on">
+                        {% for champ in champions %}
+                        <option value="{{champ}}"> {{champ}} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="champion_4">
+                    <p>Champion 4</p>
+                    <select name="champion_4" id="champion_4" autocomplete="on">
+                        {% for champ in champions %}
+                        <option value="{{champ}}"> {{champ}} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button class="champ_btn"> Filter </button>
+        </form>
+    </div>
+</body>
+
+</html>

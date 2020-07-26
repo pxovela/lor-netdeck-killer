@@ -13,12 +13,12 @@ def index():
         return render_template("index.html", regions=regions)
 
 # check if regions are selected
-@app.route('/success', methods=['POST', 'GET'])
-def region_select():
+@app.route('/deck_select', methods=['POST'])
+def deck_select():
     if request.method == 'POST':
         print(request.form.get('region_1'))
-        #print(str(region_1))
-    return redirect(request.referrer)
+        print(request.form.get('region_2'))
+        return render_template("deck_select.html", champions=champions)
 
 # run page
 if __name__ == '__main__':
