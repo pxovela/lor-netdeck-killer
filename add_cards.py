@@ -16,4 +16,4 @@ for sets in card_data_files:
 
 champions = all_cards.loc[(all_cards['supertype']=='Champion') & (all_cards['type']=='Unit')]
 champions = champions[['name', 'region']].drop_duplicates()
-print(champions)
+#print(champions)

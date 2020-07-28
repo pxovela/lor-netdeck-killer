@@ -56,10 +56,10 @@ for deck in element:
     df.append(d)
 
 #add all decks to the dataframe
-df = pd.DataFrame(df)
+all_decks = pd.DataFrame(df)
 
-print(df)
-df.to_csv('results.csv')
+#print(df)
+#df.to_csv('results.csv')
 
 #close connection with the website
 driver.quit()
