@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+    <title>testing</title>
+    <head>
+        <link rel="stylesheet" href="../static/main.css">
+    </head>
+    <div class="results">
+        {{tables | safe}}
+        {% for table in tables %}
+        {{ table|safe }}
+        {% endfor %}
+    </div>
+</html>

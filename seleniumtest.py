@@ -50,7 +50,7 @@ df = []
 for deck in element:
     d = {
         'deck_code' : deck.get_attribute('href').replace('https://lor.mobalytics.gg/decks/code/', ''),
-        'matches_played' : deck.find_element_by_xpath('.//td[8]/span').text
+        'matches_played' : deck.find_element_by_xpath('.//td[8]/span').text.replace(' ','')
     }
 
     df.append(d)
@@ -59,7 +59,7 @@ for deck in element:
 all_decks = pd.DataFrame(df)
 
 #print(df)
-#df.to_csv('results.csv')
+all_decks.to_csv('results.csv')
 
 #close connection with the website
 driver.quit()

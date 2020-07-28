@@ -29,6 +29,12 @@ html, body {
     margin-bottom: 30px;
 }
 
+.champ_deck {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+}
+
 .find_btn {
 	box-shadow: 3px 4px 0px 0px #998992;
 	background-color:#ededed;
