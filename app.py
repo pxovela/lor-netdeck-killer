@@ -120,7 +120,7 @@ def deck_filter():
         all_checked = ''
         fast_checked = 'checked'
         burst_checked = ''
-        spells = opp_deck.query('type=="Spell" and cost<={mana}+{spellmana}'.format(mana=mana,spellmana=spellmana))
+        spells = opp_deck.query('type=="Spell" and spellSpeed!="Slow" and cost<={mana}+{spellmana}'.format(mana=mana,spellmana=spellmana))
         all_possible = spells
     elif card_type == 'burst':
         all_checked = ''

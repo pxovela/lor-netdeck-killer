@@ -9,7 +9,7 @@ html, body {
     height: 100%;
     background-color: #ffcad4;
     color: #3d405b;
-    overflow: hidden;
+    overflow: scroll;
     text-align: center;
 }
 
