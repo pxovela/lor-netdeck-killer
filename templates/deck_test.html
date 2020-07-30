@@ -3,11 +3,16 @@
     <title>testing</title>
 
     <head>
-        <link rel="stylesheet" href="../static/deck_test.css">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     </head>
     
     <body>
-        <div class="container">
+        <div class="container-fluid p-3 my-3 bg-primary text-white">
             <h1>LoR NetDeck Killer</h1>
             <h2>Step 3: Win</h2>
             <form class="game_state" action="{{url_for('deck_filter')}}">
@@ -25,7 +30,7 @@
                 <label for="burst">Burst Spells</label><br>
                 <input type="submit" value="Update">
               </form>
-            <div class="enemy_deck">
+            <div class="container bg-light text-dark p-3 my-3 border">
                 {{deck_table | safe}}
             </div>
         </div>

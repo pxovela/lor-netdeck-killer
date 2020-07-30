@@ -128,7 +128,7 @@ def deck_filter():
         burst_checked = 'checked'
         spells = opp_deck.query('type=="Spell" and spellSpeed=="Burst" and cost<={mana}+{spellmana}'.format(mana=mana,spellmana=spellmana))
         all_possible = spells
-    deck_table = all_possible.to_html(classes='data', header="true")
+    deck_table = all_possible.to_html(classes='table table-striped p-3 my-3 border table-hover', header="true")
     return render_template('deck_test.html', deck_table=deck_table, round_num=round_num, mana=mana, spellmana=spellmana, card_type=card_type, all_checked=all_checked, fast_checked=fast_checked, burst_checked=burst_checked)
 
 # run page
