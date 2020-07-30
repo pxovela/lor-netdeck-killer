@@ -4,10 +4,7 @@
     <head>
         <link rel="stylesheet" href="../static/main.css">
     </head>
-    <div class="results">
-        {{tables | safe}}
-        {% for table in tables %}
-        {{ table|safe }}
-        {% endfor %}
-    </div>
+    <body>
+        {{deck_table | safe}}
+    </body>
 </html>

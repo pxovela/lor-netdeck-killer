@@ -2,12 +2,22 @@
 from flask import Flask, render_template, request, redirect
 import add_cards as cards
 import pandas as pd
+from lor_deckcodes import LoRDeck, CardCodeAndCount
+from add_cards import all_cards
 
 #list of all champs and regions
 regions = ['--none--', 'Bilgewater', 'Demacia', 'Freljord', 'Ionia', 'Noxus', 'Piltover & Zaun', 'Shadow Isles']
 #list of all current decks
 global deck_details
 deck_details = pd.read_csv('deck_details.csv')
+
+import pandas as pd
+deck_details = pd.read_csv('deck_details.csv')
+
+# function to generate deck links
+def make_clickable(val):
+    return '<a href="/deck_select/{}">Select Deck</a>'.format(val)
+deck_details['links'] = deck_details['deck_code'].apply(make_clickable)
 
 # define app
 app = Flask(__name__)
@@ -18,8 +28,8 @@ def index():
         return render_template("index.html", regions=regions)
 
 # capture selected regions
-@app.route('/champ_select', methods=['POST'])
-def champ_select():
+@app.route('/region_select', methods=['GET','POST'])
+def region_select():
     global deck_details
     global selected_regions
     global remaining_champs
@@ -39,12 +49,12 @@ def champ_select():
             deck_details = deck_details[(deck_details['region_1'].isin(selected_regions)) & (deck_details['region_2'].isin(selected_regions))]
         elif len(selected_regions)==1:
             deck_details = deck_details[(deck_details['region_1'].isin(selected_regions)) & (deck_details['region_2']=='None')]
-        deck_details = deck_details[['matches_played', 'champion_1', 'champion_2', 'champion_3', 'champion_4']]
-        tables = deck_details.to_html(classes='data', header="true")
+        deck_details = deck_details[['matches_played', 'champion_1', 'champion_2', 'champion_3', 'champion_4', 'links']]
+        tables = deck_details.to_html(classes='data', header="true", escape=False)
         return render_template("deck_select.html", remaining_champs=remaining_champs, tables=tables)
 
-@app.route('/deck_select', methods=['POST'])
-def deck_select():
+@app.route('/champ_select', methods=['GET', 'POST'])
+def champ_select():
     global deck_details
     global tables
     if request.method == 'POST':
@@ -68,10 +78,26 @@ def deck_select():
             deck_details = deck_details[(deck_details['champion_1'].isin(selected_champions)) & (deck_details['champion_2'].isin(selected_champions)) & (deck_details['champion_3']=='None')]
         elif len(selected_champions)==1:
             deck_details = deck_details[(deck_details['champion_1'].isin(selected_champions)) & (deck_details['champion_2']=='None')]
-        tables = deck_details.to_html(classes='data', header="true")
+        tables = deck_details.to_html(classes='data', header="true", escape=False)
     return render_template("deck_select.html", remaining_champs=remaining_champs, tables=tables)
 
-
+@app.route('/deck_select/<deck_code>', methods=['GET', 'POST'])
+def deck_select(deck_code):
+    deck = LoRDeck.from_deckcode(deck_code)
+    #iterate through each card of the deck
+    df = []
+    for card in deck.cards:
+        d = {
+            'cardCode' : card.card_code,
+            'count' : card.count
+        }
+        df.append(d)
+    current_deck = pd.DataFrame(df)
+    current_deck = current_deck.join(all_cards.set_index('cardCode'), on='cardCode', how='left')
+    current_deck = current_deck[['name', 'count', 'cost', 'type', 'supertype', 'spellSpeed']]
+    current_deck.sort_values(by=['cost'], inplace=True)
+    deck_table = current_deck.to_html(classes='data', header="true")
+    return render_template('deck_test.html', deck_table=deck_table)
 
 # run page
 if __name__ == '__main__':
