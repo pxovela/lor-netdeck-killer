@@ -7,17 +7,10 @@ from add_cards import all_cards
 
 #list of all champs and regions
 regions = ['--none--', 'Bilgewater', 'Demacia', 'Freljord', 'Ionia', 'Noxus', 'Piltover & Zaun', 'Shadow Isles']
-#list of all current decks
-global deck_details
-deck_details = pd.read_csv('deck_details.csv')
-
-import pandas as pd
-deck_details = pd.read_csv('deck_details.csv')
 
 # function to generate deck links
 def make_clickable(val):
     return '<a href="/deck_select/{}">Select Deck</a>'.format(val)
-deck_details['links'] = deck_details['deck_code'].apply(make_clickable)
 
 # define app
 app = Flask(__name__)
@@ -28,13 +21,16 @@ def index():
         return render_template("index.html", regions=regions)
 
 # capture selected regions
-@app.route('/region_select', methods=['GET','POST'])
+@app.route('/region_select', methods=['POST'])
 def region_select():
     global deck_details
     global selected_regions
     global remaining_champs
     global tables
     if request.method == 'POST':
+        #list of all current decks
+        deck_details = pd.read_csv('deck_details.csv')
+        deck_details['links'] = deck_details['deck_code'].apply(make_clickable)
         # empty list for selected regions
         selected_regions = []
         selected_regions.append(request.form.get('region_1'))
@@ -55,7 +51,7 @@ def region_select():
 
 @app.route('/champ_select', methods=['GET', 'POST'])
 def champ_select():
-    global deck_details
+    global deck_details_ch
     global tables
     if request.method == 'POST':
         tables = deck_details.to_html(classes='data', header="true")
@@ -67,22 +63,24 @@ def champ_select():
         selected_champions.append(request.form.get('champion_3'))
         selected_champions.append(request.form.get('champion_4'))
         selected_champions = [champ for champ in selected_champions if champ != '--none--']
-        print(selected_champions)
-        print(len(selected_champions))
          # filter deck list by champions
         if len(selected_champions)==4:
-            deck_details = deck_details[(deck_details['champion_1'].isin(selected_champions)) & (deck_details['champion_2'].isin(selected_champions)) & (deck_details['champion_3'].isin(selected_champions)) & (deck_details['champion_4'].isin(selected_champions))]
+            deck_details_ch = deck_details[(deck_details['champion_1'].isin(selected_champions)) & (deck_details['champion_2'].isin(selected_champions)) & (deck_details['champion_3'].isin(selected_champions)) & (deck_details['champion_4'].isin(selected_champions))]
         elif len(selected_champions)==3:
-            deck_details = deck_details[(deck_details['champion_1'].isin(selected_champions)) & (deck_details['champion_2'].isin(selected_champions)) & (deck_details['champion_3'].isin(selected_champions)) & (deck_details['champion_4']=='None')]
+            deck_details_ch = deck_details[(deck_details['champion_1'].isin(selected_champions)) & (deck_details['champion_2'].isin(selected_champions)) & (deck_details['champion_3'].isin(selected_champions)) & (deck_details['champion_4']=='None')]
         elif len(selected_champions)==2:
-            deck_details = deck_details[(deck_details['champion_1'].isin(selected_champions)) & (deck_details['champion_2'].isin(selected_champions)) & (deck_details['champion_3']=='None')]
+            deck_details_ch = deck_details[(deck_details['champion_1'].isin(selected_champions)) & (deck_details['champion_2'].isin(selected_champions)) & (deck_details['champion_3']=='None')]
         elif len(selected_champions)==1:
-            deck_details = deck_details[(deck_details['champion_1'].isin(selected_champions)) & (deck_details['champion_2']=='None')]
-        tables = deck_details.to_html(classes='data', header="true", escape=False)
+            deck_details_ch = deck_details[(deck_details['champion_1'].isin(selected_champions)) & (deck_details['champion_2']=='None')]
+        else:
+            deck_details_ch = deck_details
+        tables = deck_details_ch.to_html(classes='data', header="true", escape=False)
     return render_template("deck_select.html", remaining_champs=remaining_champs, tables=tables)
 
 @app.route('/deck_select/<deck_code>', methods=['GET', 'POST'])
 def deck_select(deck_code):
+    global deck_table
+    global current_deck
     deck = LoRDeck.from_deckcode(deck_code)
     #iterate through each card of the deck
     df = []
@@ -97,7 +95,41 @@ def deck_select(deck_code):
     current_deck = current_deck[['name', 'count', 'cost', 'type', 'supertype', 'spellSpeed']]
     current_deck.sort_values(by=['cost'], inplace=True)
     deck_table = current_deck.to_html(classes='data', header="true")
-    return render_template('deck_test.html', deck_table=deck_table)
+    round_num = 1
+    mana = 1
+    spellmana = 0
+    all_checked = 'checked'
+    return render_template('deck_test.html', deck_table=deck_table, round_num=round_num, mana=mana, spellmana=spellmana, all_checked=all_checked, current_deck=current_deck)
+
+@app.route('/deck_filter', methods=['GET', 'POST'])
+def deck_filter():
+    global current_deck
+    round_num = request.args['turn']
+    mana = request.args['mana']
+    spellmana = request.args['spellmana']
+    card_type = request.args['card_type']
+    opp_deck = current_deck
+    if card_type == 'all_cards':
+        all_checked = 'checked'
+        fast_checked = ''
+        burst_checked = ''
+        spells = opp_deck.query('type=="Spell" and cost<={mana}+{spellmana}'.format(mana=mana,spellmana=spellmana))
+        units = opp_deck.query('type=="Unit" and cost<={mana}'.format(mana=mana))
+        all_possible = pd.concat([spells,units])
+    elif card_type == 'fast':
+        all_checked = ''
+        fast_checked = 'checked'
+        burst_checked = ''
+        spells = opp_deck.query('type=="Spell" and cost<={mana}+{spellmana}'.format(mana=mana,spellmana=spellmana))
+        all_possible = spells
+    elif card_type == 'burst':
+        all_checked = ''
+        fast_checked = ''
+        burst_checked = 'checked'
+        spells = opp_deck.query('type=="Spell" and spellSpeed=="Burst" and cost<={mana}+{spellmana}'.format(mana=mana,spellmana=spellmana))
+        all_possible = spells
+    deck_table = all_possible.to_html(classes='data', header="true")
+    return render_template('deck_test.html', deck_table=deck_table, round_num=round_num, mana=mana, spellmana=spellmana, card_type=card_type, all_checked=all_checked, fast_checked=fast_checked, burst_checked=burst_checked)
 
 # run page
 if __name__ == '__main__':

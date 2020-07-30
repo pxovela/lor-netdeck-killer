@@ -1,10 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
     <title>testing</title>
+
     <head>
-        <link rel="stylesheet" href="../static/main.css">
+        <link rel="stylesheet" href="../static/deck_test.css">
     </head>
+    
     <body>
-        {{deck_table | safe}}
+        <div class="container">
+            <h1>LoR NetDeck Killer</h1>
+            <h2>Step 3: Win</h2>
+            <form class="game_state" action="{{url_for('deck_filter')}}">
+                <label for="turn">Select game round:</label>
+                <input type="number" id="turn" name="turn" min="0" max="20" value={{round_num}}><br>
+                <label for="mana">Select Enemy Mana</label>
+                <input type="number" id="mana" name="mana" min="0" max="10" value={{mana}}><br>
+                <label for="spellmana">Select Enemy Spell Mana</label>
+                <input type="number" id="spellmana" name="spellmana" min="0" max="3" value={{spellmana}}><br>
+                <input type="radio" id="all_cards" name="card_type" value="all_cards" {{all_checked}}>
+                <label for="all_cards">All Cards</label><br>
+                <input type="radio" id="fast" name="card_type" value="fast" {{fast_checked}}>
+                <label for="fast">Fast+ Spells</label><br>
+                <input type="radio" id="burst" name="card_type" value="burst" {{burst_checked}}>
+                <label for="burst">Burst Spells</label><br>
+                <input type="submit" value="Update">
+              </form>
+            <div class="enemy_deck">
+                {{deck_table | safe}}
+            </div>
+        </div>
     </body>
 </html>
