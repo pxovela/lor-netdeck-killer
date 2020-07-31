@@ -53,6 +53,7 @@ def region_select():
 def champ_select():
     global deck_details_ch
     global tables
+    global current_deck
     if request.method == 'POST':
         tables = deck_details.to_html(classes='data', header="true")
         # empty list for selected champions
