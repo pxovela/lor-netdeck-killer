@@ -26,7 +26,6 @@ def region_select():
     global deck_details
     global selected_regions
     global remaining_champs
-    global tables
     if request.method == 'POST':
         #list of all current decks
         deck_details = pd.read_csv('deck_details.csv')
@@ -52,8 +51,6 @@ def region_select():
 @app.route('/champ_select', methods=['GET', 'POST'])
 def champ_select():
     global deck_details_ch
-    global tables
-    global current_deck
     if request.method == 'POST':
         tables = deck_details.to_html(classes='data', header="true")
         # empty list for selected champions
@@ -78,10 +75,9 @@ def champ_select():
         tables = deck_details_ch.to_html(classes='data', header="true", escape=False)
     return render_template("deck_select.html", remaining_champs=remaining_champs, tables=tables)
 
+
 @app.route('/deck_select/<deck_code>', methods=['GET', 'POST'])
 def deck_select(deck_code):
-    global deck_table
-    global current_deck
     deck = LoRDeck.from_deckcode(deck_code)
     #iterate through each card of the deck
     df = []
@@ -100,15 +96,27 @@ def deck_select(deck_code):
     mana = 1
     spellmana = 0
     all_checked = 'checked'
-    return render_template('deck_test.html', deck_table=deck_table, round_num=round_num, mana=mana, spellmana=spellmana, all_checked=all_checked)
+    return render_template('deck_test.html', deck_table=deck_table, round_num=round_num, mana=mana, spellmana=spellmana, all_checked=all_checked, deck_code=deck_code)
 
-@app.route('/deck_filter', methods=['GET', 'POST'])
-def deck_filter():
-    #global current_deck
+@app.route('/deck_filter/<deck_code>', methods=['GET', 'POST'])
+def deck_filter(deck_code):
     round_num = request.args['turn']
     mana = request.args['mana']
     spellmana = request.args['spellmana']
     card_type = request.args['card_type']
+    #iterate through each card of the deck
+    deck = LoRDeck.from_deckcode(deck_code)
+    df = []
+    for card in deck.cards:
+        d = {
+            'cardCode' : card.card_code,
+            'count' : card.count
+        }
+        df.append(d)
+    current_deck = pd.DataFrame(df)
+    current_deck = current_deck.join(all_cards.set_index('cardCode'), on='cardCode', how='left')
+    current_deck = current_deck[['name', 'count', 'cost', 'type', 'supertype', 'spellSpeed']]
+    current_deck.sort_values(by=['cost'], inplace=True)
     opp_deck = current_deck
     if card_type == 'all_cards':
         all_checked = 'checked'
@@ -130,7 +138,7 @@ def deck_filter():
         spells = opp_deck.query('type=="Spell" and spellSpeed=="Burst" and cost<={mana}+{spellmana}'.format(mana=mana,spellmana=spellmana))
         all_possible = spells
     deck_table = all_possible.to_html(classes='table table-striped p-3 my-3 border table-hover', header="true")
-    return render_template('deck_test.html', deck_table=deck_table, round_num=round_num, mana=mana, spellmana=spellmana, card_type=card_type, all_checked=all_checked, fast_checked=fast_checked, burst_checked=burst_checked)
+    return render_template('deck_test.html', deck_table=deck_table, round_num=round_num, mana=mana, spellmana=spellmana, card_type=card_type, all_checked=all_checked, fast_checked=fast_checked, burst_checked=burst_checked, deck_code=deck_code)
 
 # run page
 if __name__ == '__main__':
