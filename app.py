@@ -4,6 +4,8 @@ import add_cards as cards
 import pandas as pd
 from lor_deckcodes import LoRDeck, CardCodeAndCount
 from add_cards import all_cards
+import os
+import requests
 
 #list of all champs and regions
 regions = ['--none--', 'Bilgewater', 'Demacia', 'Freljord', 'Ionia', 'Noxus', 'Piltover & Zaun', 'Shadow Isles']
@@ -138,7 +140,10 @@ def deck_filter(deck_code):
         spells = opp_deck.query('type=="Spell" and spellSpeed=="Burst" and cost<={mana}+{spellmana}'.format(mana=mana,spellmana=spellmana))
         all_possible = spells
     deck_table = all_possible.to_html(classes='table table-striped p-3 my-3 border table-hover', header="true")
-    return render_template('deck_test.html', deck_table=deck_table, round_num=round_num, mana=mana, spellmana=spellmana, card_type=card_type, all_checked=all_checked, fast_checked=fast_checked, burst_checked=burst_checked, deck_code=deck_code)
+    os.environ['NO_PROXY'] = '127.0.0.1'
+    r = requests.get('http://127.0.0.1:21337/positional-rectangles')
+    r = r.content
+    return render_template('deck_test.html', deck_table=deck_table, round_num=round_num, mana=mana, spellmana=spellmana, card_type=card_type, all_checked=all_checked, fast_checked=fast_checked, burst_checked=burst_checked, deck_code=deck_code, r=r)
 
 # run page
 if __name__ == '__main__':
