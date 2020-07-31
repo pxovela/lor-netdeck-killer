@@ -103,7 +103,7 @@ def deck_select(deck_code):
 
 @app.route('/deck_filter', methods=['GET', 'POST'])
 def deck_filter():
-    global current_deck
+    #global current_deck
     round_num = request.args['turn']
     mana = request.args['mana']
     spellmana = request.args['spellmana']
