@@ -100,7 +100,7 @@ def deck_select(deck_code):
     mana = 1
     spellmana = 0
     all_checked = 'checked'
-    return render_template('deck_test.html', deck_table=deck_table, round_num=round_num, mana=mana, spellmana=spellmana, all_checked=all_checked, current_deck=current_deck)
+    return render_template('deck_test.html', deck_table=deck_table, round_num=round_num, mana=mana, spellmana=spellmana, all_checked=all_checked)
 
 @app.route('/deck_filter', methods=['GET', 'POST'])
 def deck_filter():
